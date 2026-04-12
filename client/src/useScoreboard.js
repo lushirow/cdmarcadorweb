@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 
 // Connect to the local Socket.IO server we just created
-const socket = io('http://localhost:3001');
+const socket = io('https://cdmarcadorweb.onrender.com/');
 
 export function useScoreboard(isController = false) {
     const [gameState, setGameState] = useState({
