@@ -1,0 +1,374 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap');
+
+:root {
+    --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8;
+    --accent-local: #3b82f6;
+    --accent-visit: #ef4444;
+    --accent-timer: #10b981;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-primary);
+    background: transparent; /* VERY IMPORTANT FOR OBS */
+    overflow: hidden;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* -------------------------------------
+   CONTROL PANEL UI
+-------------------------------------- */
+.app-container {
+    background: var(--bg-gradient);
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 1.5rem;
+    gap: 2rem;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.header-timer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    gap: 1rem;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: 500px;
+}
+
+.header-timer::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--accent-timer);
+    box-shadow: 0 0 15px var(--accent-timer);
+}
+
+.time-display {
+    font-size: 4rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -2px;
+    text-shadow: 0 0 20px rgba(255,255,255,0.2);
+}
+
+.timer-controls {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.btn-control {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-control:active {
+    transform: scale(0.9);
+    background: rgba(255,255,255,0.2);
+}
+
+.btn-control.play {
+    background: var(--accent-timer);
+    border-color: #059669;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+}
+
+.btn-control.play.active {
+    background: #f59e0b;
+    border-color: #d97706;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+}
+
+.scoreboard {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 1.5rem;
+    justify-content: center;
+    width: 100%;
+    max-width: 500px;
+}
+
+.team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.team-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.color-picker {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    background: transparent;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.color-picker::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.color-picker::-webkit-color-swatch {
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+}
+
+.team-name-input {
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.3s, color 0.3s;
+    text-align: center;
+    width: 100%;
+    font-family: inherit;
+    outline: none;
+}
+
+.team-name-input:focus {
+    color: white;
+    border-bottom: 2px solid rgba(255,255,255,0.5);
+}
+
+.score-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.team-local .score-container::after {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 6px;
+    background: var(--accent-local);
+    box-shadow: 0 0 10px var(--accent-local);
+}
+
+.team-visit .score-container::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 6px;
+    background: var(--accent-visit);
+    box-shadow: 0 0 10px var(--accent-visit);
+}
+
+.score-number {
+    font-size: 5rem;
+    font-weight: 800;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    width: 100px;
+    text-align: center;
+}
+
+.btn-score {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 2.5rem;
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-score:active {
+    transform: scale(0.9) translateY(2px);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.vs-divider {
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text-secondary);
+    letter-spacing: 4px;
+    opacity: 0.5;
+}
+
+@media (min-width: 768px) {
+    .app-container {
+        justify-content: center;
+    }
+    .scoreboard {
+        flex-direction: row;
+        align-items: center;
+        max-width: 800px;
+    }
+    .team {
+        flex: 1;
+    }
+    .score-container {
+        flex-direction: column;
+        padding: 2rem;
+        gap: 1.5rem;
+    }
+    .team-local .score-container::after,
+    .team-visit .score-container::after {
+        left: 0; right: 0; bottom: 0; top: auto;
+        height: 6px;
+        width: 100%;
+    }
+    .btn-score {
+        width: 100%;
+        height: 50px;
+    }
+    .vs-divider {
+        margin: 0 1rem;
+    }
+}
+
+/* Animations */
+@keyframes flash {
+    0% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.2); filter: brightness(1.5); }
+    100% { transform: scale(1); filter: brightness(1); }
+}
+
+.updating {
+    animation: flash 0.3s ease;
+}
+
+/* -------------------------------------
+   OBS VIEWER UI
+-------------------------------------- */
+.obs-body {
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+    width: 100vw;
+    height: 100vh;
+}
+
+.overlay-container {
+    display: flex;
+    align-items: stretch;
+    height: 60px;
+    background: rgba(15, 23, 42, 0.85); /* Dark blue but translucent */
+    border-radius: 12px;
+}
+
+.obs-team {
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    min-width: 150px;
+    font-weight: 600;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.obs-team-local {
+    justify-content: flex-end;
+    border-bottom: 3px solid var(--accent-local);
+}
+
+.obs-team-visit {
+    justify-content: flex-start;
+    border-bottom: 3px solid var(--accent-visit);
+}
+
+.obs-team-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.obs-score-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 15px;
+    background: rgba(0, 0, 0, 0.4);
+    font-size: 2rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    min-width: 100px;
+}
+
+.obs-divider {
+    margin: 0 10px;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 400;
+    font-size: 1.5rem;
+}
+
+.obs-time-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    background: rgba(16, 185, 129, 0.2); 
+    border-left: 1px solid var(--glass-border);
+    border-bottom: 3px solid var(--accent-timer);
+    font-size: 1.5rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    color: #34d399; 
+    min-width: 100px;
+}
