@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 
-// Connect to the local Socket.IO server we just created
-const socket = io('https://cdmarcadorweb.onrender.com/');
+// In production, the server serves the client, so connect to the same origin.
+// In development, connect to the local backend on port 3001.
+const SOCKET_URL = import.meta.env.PROD ? window.location.origin : 'http://localhost:3001';
+const socket = io(SOCKET_URL);
 
 export function useScoreboard(isController = false) {
     const [gameState, setGameState] = useState({
