@@ -51,7 +51,7 @@ io.on('connection', (socket) => {
 });
 
 // SPA fallback: any route not handled returns index.html for client-side routing
-app.get('*', (req, res) => {
+app.use((req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
