@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 
 // In production, the server serves the client, so connect to the same origin.
@@ -19,38 +19,16 @@ export function useScoreboard(isController = false) {
         isRunning: false
     });
 
-    const timerRef = useRef(null);
-
     // Initial connection and listen for updates
     useEffect(() => {
         socket.on('stateUpdate', (newState) => {
-            setGameState(newState);
+            setGameState(prev => ({ ...prev, ...newState }));
         });
 
         return () => {
             socket.off('stateUpdate');
         };
     }, []);
-
-    // Timer logic ONLY runs on the controller side to avoid multiple sources of truth.
-    // If we are just viewing (OBS), we just receive the state.
-    useEffect(() => {
-        if (isController) {
-            if (gameState.isRunning) {
-                timerRef.current = setInterval(() => {
-                    setGameState(prev => {
-                        const nextState = { ...prev, timeSeconds: prev.timeSeconds + 1 };
-                        // Broadcast timer tick to OBS every second
-                        socket.emit('updateState', { timeSeconds: nextState.timeSeconds });
-                        return nextState;
-                    });
-                }, 1000);
-            } else {
-                clearInterval(timerRef.current);
-            }
-        }
-        return () => clearInterval(timerRef.current);
-    }, [gameState.isRunning, isController]);
 
     // Push state changes to server
     const updateServer = (partialState) => {

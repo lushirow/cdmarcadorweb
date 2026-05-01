@@ -31,6 +31,22 @@ let gameState = {
     isRunning: false
 };
 
+let timerInterval = null;
+
+function handleTimer() {
+    if (gameState.isRunning && !timerInterval) {
+        // Start the server-side timer
+        timerInterval = setInterval(() => {
+            gameState.timeSeconds++;
+            io.emit('stateUpdate', { timeSeconds: gameState.timeSeconds });
+        }, 1000);
+    } else if (!gameState.isRunning && timerInterval) {
+        // Stop the server-side timer
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+}
+
 io.on('connection', (socket) => {
     console.log('Client connected:', socket.id);
     
@@ -43,6 +59,9 @@ io.on('connection', (socket) => {
         gameState = { ...gameState, ...newState };
         // Broadcast the updated state to ALL clients (including OBS)
         io.emit('stateUpdate', gameState);
+        
+        // Handle timer start/stop if isRunning was changed
+        handleTimer();
     });
 
     socket.on('disconnect', () => {
