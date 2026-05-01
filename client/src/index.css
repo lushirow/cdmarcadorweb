@@ -301,6 +301,9 @@ body {
     padding-top: 20px;
     width: 100vw;
     height: 100vh;
+    background: transparent;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
 }
 
 .overlay-container {
