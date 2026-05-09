@@ -25,8 +25,14 @@ export function useScoreboard(isController = false) {
             setGameState(prev => ({ ...prev, ...newState }));
         });
 
+        // Ping server every 5 minutes to keep it awake (useful for Render free tier)
+        const pingInterval = setInterval(() => {
+            fetch(`${SOCKET_URL}/ping`).catch(err => console.error('Ping failed:', err));
+        }, 5 * 60 * 1000); // 5 minutes
+
         return () => {
             socket.off('stateUpdate');
+            clearInterval(pingInterval);
         };
     }, []);
 

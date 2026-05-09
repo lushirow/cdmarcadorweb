@@ -5,6 +5,8 @@ import { Play, Pause, RotateCcw } from 'lucide-react';
 export default function ControlPanel() {
     const { gameState, updateServer } = useScoreboard(true);
     
+
+    
     // Format timer
     const minutes = Math.floor(gameState.timeSeconds / 60);
     const seconds = gameState.timeSeconds % 60;

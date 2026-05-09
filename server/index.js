@@ -3,6 +3,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 app.use(cors());
@@ -18,6 +19,8 @@ const io = new Server(server, {
     }
 });
 
+const stateFilePath = path.join(__dirname, 'gameState.json');
+
 // The single source of truth for the scoreboard
 let gameState = {
     timeSeconds: 0,
@@ -31,6 +34,28 @@ let gameState = {
     isRunning: false
 };
 
+// Try to load saved state
+try {
+    if (fs.existsSync(stateFilePath)) {
+        const savedState = JSON.parse(fs.readFileSync(stateFilePath, 'utf8'));
+        gameState = { ...gameState, ...savedState };
+        // Pause timer on server restart to avoid unexpected behavior
+        gameState.isRunning = false;
+    }
+} catch (error) {
+    console.error('Could not load saved state:', error);
+}
+
+function saveState() {
+    try {
+        const tempPath = stateFilePath + '.tmp';
+        fs.writeFileSync(tempPath, JSON.stringify(gameState));
+        fs.renameSync(tempPath, stateFilePath);
+    } catch (error) {
+        console.error('Could not save state:', error);
+    }
+}
+
 let timerInterval = null;
 
 function handleTimer() {
@@ -39,6 +64,7 @@ function handleTimer() {
         timerInterval = setInterval(() => {
             gameState.timeSeconds++;
             io.emit('stateUpdate', { timeSeconds: gameState.timeSeconds });
+            saveState();
         }, 1000);
     } else if (!gameState.isRunning && timerInterval) {
         // Stop the server-side timer
@@ -57,6 +83,7 @@ io.on('connection', (socket) => {
     socket.on('updateState', (newState) => {
         // Merge the new state
         gameState = { ...gameState, ...newState };
+        saveState();
         // Broadcast the updated state to ALL clients (including OBS)
         io.emit('stateUpdate', gameState);
         
@@ -67,6 +94,11 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
     });
+});
+
+// Ping route to keep Render free tier awake
+app.get('/ping', (req, res) => {
+    res.status(200).send('pong');
 });
 
 // SPA fallback: any route not handled returns index.html for client-side routing
