@@ -22,7 +22,27 @@ export function useScoreboard(isController = false) {
     // Initial connection and listen for updates
     useEffect(() => {
         socket.on('stateUpdate', (newState) => {
-            setGameState(prev => ({ ...prev, ...newState }));
+            if (isController && newState.isDefault) {
+                const saved = localStorage.getItem('marcadorState');
+                if (saved) {
+                    try {
+                        const parsed = JSON.parse(saved);
+                        parsed.isDefault = false;
+                        socket.emit('updateState', parsed);
+                        return; // Ignore default state, we are restoring
+                    } catch (e) {
+                        console.error('Failed to restore state', e);
+                    }
+                }
+            }
+
+            setGameState(prev => {
+                const next = { ...prev, ...newState };
+                if (isController && !newState.isDefault) {
+                    localStorage.setItem('marcadorState', JSON.stringify(next));
+                }
+                return next;
+            });
         });
 
         // Ping server every 5 minutes to keep it awake (useful for Render free tier)
@@ -40,7 +60,13 @@ export function useScoreboard(isController = false) {
     const updateServer = (partialState) => {
         socket.emit('updateState', partialState);
         // Optimistic local update
-        setGameState(prev => ({ ...prev, ...partialState }));
+        setGameState(prev => {
+            const next = { ...prev, ...partialState };
+            if (isController) {
+                localStorage.setItem('marcadorState', JSON.stringify(next));
+            }
+            return next;
+        });
     };
 
     return { gameState, updateServer };

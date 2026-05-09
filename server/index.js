@@ -31,7 +31,8 @@ let gameState = {
     colorLocal: '#3b82f6',
     colorVisit: '#ef4444',
     period: '1T',
-    isRunning: false
+    isRunning: false,
+    isDefault: true
 };
 
 // Try to load saved state
@@ -39,6 +40,7 @@ try {
     if (fs.existsSync(stateFilePath)) {
         const savedState = JSON.parse(fs.readFileSync(stateFilePath, 'utf8'));
         gameState = { ...gameState, ...savedState };
+        gameState.isDefault = false;
         // Pause timer on server restart to avoid unexpected behavior
         gameState.isRunning = false;
     }
@@ -64,7 +66,6 @@ function handleTimer() {
         timerInterval = setInterval(() => {
             gameState.timeSeconds++;
             io.emit('stateUpdate', { timeSeconds: gameState.timeSeconds });
-            saveState();
         }, 1000);
     } else if (!gameState.isRunning && timerInterval) {
         // Stop the server-side timer
@@ -83,6 +84,7 @@ io.on('connection', (socket) => {
     socket.on('updateState', (newState) => {
         // Merge the new state
         gameState = { ...gameState, ...newState };
+        gameState.isDefault = false;
         saveState();
         // Broadcast the updated state to ALL clients (including OBS)
         io.emit('stateUpdate', gameState);
